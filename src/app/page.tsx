@@ -1,14 +1,30 @@
-import Image from "next/image";
+import LoginButton from "@/components/LoginButton";
+
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
+import { loginWithGithub } from "./auth/authlogin";
+import { Axios } from "axios";
+
 export default function Home() {
+
+  const handleLogin = async () => {
+    try {
+      const { user, token } = await loginWithGithub();
+      console.log("Usuário logado:", user);
+      console.log("Token de acesso:", token);
+    } catch (error) {
+      console.error("Erro ao fazer login:", error);
+    }
+  };
+
+
   return (
     <div className="flex flex-col justify-between bg-[#F3F4F6]  min-h-screen sm:p-5 font-[family-name:var(--font-geist-sans)]">
       
           <header className="flex justify-between w-full ">
           <h1 className="font-inria text-4xl">OpenMatch</h1>
-          <Button  className=" text-white cursor-pointer">Login com github</Button>
+          <LoginButton className=" text-white cursor-pointer">Login com github</LoginButton>
           </header>
       
       <main className="mt-5 gap-[32px]items-center sm:items-start">
@@ -26,7 +42,7 @@ export default function Home() {
 
 
             <div className="mt-4">
-            <Button  className=" text-white cursor-pointer w-[150px]">Login com github</Button>
+            <LoginButton  className=" text-white cursor-pointer w-[150px]">Login com github</LoginButton>
             </div>
 
 
