@@ -3,50 +3,44 @@
 import { Button } from "@/components/ui/button";
 import { loginWithGithub } from "@/app/auth/authlogin";
 import axios from "axios";
-import { useRouter } from "next/navigation";  // Importando useRouter para redirecionar
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie"; // Importando js-cookie
 
 interface LoginButtonProps {
-  className?: string; 
+  className?: string;
   children?: React.ReactNode;
 }
 
 export default function LoginButton({ className, children }: LoginButtonProps) {
-  const router = useRouter(); // useRouter funcionando porque estamos no lado do cliente
+  const router = useRouter();
 
   const handleLogin = async () => {
     try {
-      const { user, token } = await loginWithGithub();
+      // Faz login com o GitHub e obtém o token
+      const { token } = await loginWithGithub();
 
-      const userData = {
-        uid: user.uid,
-        displayName: user.displayName,
-        email: user.email,
-        photoURL: user.photoURL,
-        createdAt: (user.metadata as any).createdAt || null,
-        creationTime: user.metadata.creationTime,
-        lastLoginAt: (user.metadata as any).lastLoginAt || null,
-        lastSignInTime: user.metadata.lastSignInTime,
-        token: token,
-      };
-
+      // Envia apenas o token para o back-end
       try {
-        const response = await axios.post('http://localhost:5000/auth/github', userData);
-        console.log('User sent to backend:', response.data);
+        const response = await axios.post("http://localhost:5000/auth/github", { token });
+
+        console.log("Token recebido do backend:", response.data);
+
+        // Armazenando o token no cookie usando js-cookie com expiração de 7 dias
+        if (token) {
+          console.log("Token:", token);
+          Cookies.set("access_token", token, {
+            path: "/",
+            sameSite: "strict",
+            expires: 7, // Expira em 7 dias
+          });
+          localStorage.setItem("user", JSON.stringify(response.data)); // Armazena os dados do usuário retornados pelo back-end
+        }
+
+        // Redirecionar para a página inicial após o login
+        router.push("/InicialPage");
       } catch (error) {
-        console.error('Error sending user to backend:', error);
+        console.error("Erro ao enviar token para o backend:", error);
       }
-    
-      console.log("Usuário logado:", userData);
-
-      // Armazenando o token no cookie
-      if (token) {
-        document.cookie = `access_token=${token}; path=/; secure; samesite=strict`;
-        localStorage.setItem("user", JSON.stringify(userData));
-      }
-
-      // Redirecionar para a página inicial após o login
-      router.push("/InicialPage");
-      
     } catch (error) {
       console.error("Erro ao fazer login:", error);
     }

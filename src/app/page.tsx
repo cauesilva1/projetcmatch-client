@@ -15,11 +15,8 @@ export default function Home() {
 
   const handleLogin = async () => {
     try {
-      const { user, token } = await loginWithGithub();
-      console.log("Usuário logado:", user);
-      console.log("Token de acesso:", token);
+      const { token } = await loginWithGithub();
 
-      router.push("/InicalPage");
     } catch (error) {
       console.error("Erro ao fazer login:", error);
     }
@@ -29,9 +26,9 @@ export default function Home() {
     <div className="flex flex-col justify-between bg-[#F3F4F6] min-h-screen sm:p-5 font-[family-name:var(--font-geist-sans)]">
       {/* Header com padding */}
       <header className="flex justify-between items-center w-full px-4 py-4 sm:px-0 sm:py-0">
-        <h1 className="font-inria text-4xl">OpenMatch</h1>
-        <LoginButton className="text-white cursor-pointer">Login com github</LoginButton>
-      </header>
+    <h1 className="font-inria text-4xl">OpenMatch</h1>
+    <LoginButton className="text-white cursor-pointer">Login com github</LoginButton>
+  </header>
 
       <main className="mt-5 gap-[32px] items-center sm:items-start">
         <div className="w-full flex flex-col justify-center text-center">

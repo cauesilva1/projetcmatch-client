@@ -1,5 +1,4 @@
-// loginWithGithub.ts
-import { FirebaseError, initializeApp } from "firebase/app";
+import { initializeApp } from "firebase/app";
 import { getAuth, signInWithPopup, GithubAuthProvider } from "firebase/auth";
 
 const firebaseConfig = {
@@ -21,22 +20,12 @@ export const loginWithGithub = async () => {
         const result = await signInWithPopup(auth, provider);
         const credential = GithubAuthProvider.credentialFromResult(result);
         const token = credential ? credential.accessToken : null;
-        const user = result.user;
 
-        if (token) {
-            // Cookie para o token
-            document.cookie = `access_token=${token}; path=/; secure; samesite=strict`;
-
-            // Local Storage para o user
-            localStorage.setItem("user", JSON.stringify({
-                uid: user.uid,
-                displayName: user.displayName,
-                email: user.email,
-                photoURL: user.photoURL,
-            }));
+        if (!token) {
+            throw new Error("Token não encontrado.");
         }
 
-        return { user, token };
+        return { token };
     } catch (error) {
         console.error("Erro durante o login:", error);
         throw error;
