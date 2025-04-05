@@ -31,7 +31,7 @@ export default function Profile() {
     <div className="flex flex-col bg-[#F3F4F6] min-h-screen p-4">
       {/* Header */}
       <header className="flex justify-between w-full items-center mb-6">
-        <h1 className="font-inria text-4xl">OpenMatch</h1>
+        <h1 className="font-inria text-2xl sm:text-4xl">OpenMatch</h1>
       </header>
 
       {/* Conteúdo */}
@@ -40,13 +40,13 @@ export default function Profile() {
         <Avatar
           src="https://via.placeholder.com/150"
           alt="Foto do usuário"
-          className="w-32 h-32 rounded-full border border-gray-300"
+          className="w-24 h-24 sm:w-32 sm:h-32 rounded-full border border-gray-300"
         />
-        <h1 className="text-3xl font-bold">Nome do Usuário</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold">Nome do Usuário</h1>
 
-        <div className="flex gap-4">
+        <div className="flex flex-col lg:flex-row gap-4 w-full">
           {/* Bio */}
-          <div className="flex flex-col items-center gap-4 w-full">
+          <div className="flex flex-col items-center gap-4 w-full lg:w-[70%]">
             <Card className="w-full max-w-4xl">
               <CardHeader>
                 <CardTitle>Bio</CardTitle>
@@ -170,7 +170,7 @@ export default function Profile() {
           </div>
 
           {/* Projetos Contribuídos */}
-          <Card className="w-[30%] max-w-4xl">
+          <Card className="w-full lg:w-[30%] max-w-4xl">
             <CardHeader>
               <CardTitle>Projetos Contribuídos</CardTitle>
             </CardHeader>

@@ -1,3 +1,4 @@
+// loginWithGithub.ts
 import { FirebaseError, initializeApp } from "firebase/app";
 import { getAuth, signInWithPopup, GithubAuthProvider } from "firebase/auth";
 
@@ -9,45 +10,35 @@ const firebaseConfig = {
     messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
     appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
     measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
-  };
-  
+};
 
 export const loginWithGithub = async () => {
     const app = initializeApp(firebaseConfig);
     const provider = new GithubAuthProvider();
     const auth = getAuth(app);
 
-  try {
-    const result = await signInWithPopup(auth, provider);
+    try {
+        const result = await signInWithPopup(auth, provider);
+        const credential = GithubAuthProvider.credentialFromResult(result);
+        const token = credential ? credential.accessToken : null;
+        const user = result.user;
 
-    // This gives you a GitHub Access Token. You can use it to access the GitHub API.
-    const credential = GithubAuthProvider.credentialFromResult(result);
-    const token = credential ? credential.accessToken : null;
+        if (token) {
+            // Cookie para o token
+            document.cookie = `access_token=${token}; path=/; secure; samesite=strict`;
 
-    // The signed-in user info.
-    const user = result.user;
+            // Local Storage para o user
+            localStorage.setItem("user", JSON.stringify({
+                uid: user.uid,
+                displayName: user.displayName,
+                email: user.email,
+                photoURL: user.photoURL,
+            }));
+        }
 
-    // console.log("User Info:", user);
-
-    // console.log("User:", user);
-    // console.log("Token:", token);
-
-    return { user, token };
-  } catch (error) {
-    // Handle Errors here.
-    if (error instanceof Error && 'code' in error && 'message' in error) {
-      const errorCode = (error as any).code;
-      const errorMessage = (error as any).message;
-      const email = (error as any).customData?.email;
-      const credential = GithubAuthProvider.credentialFromError(error as FirebaseError);
-
-      console.error("Error Code:", errorCode);
-      console.error("Error Message:", errorMessage);
-      console.error("Email:", email);
-    } else {
-      console.error("An unknown error occurred:", error);
+        return { user, token };
+    } catch (error) {
+        console.error("Erro durante o login:", error);
+        throw error;
     }
-
-    throw error;
-  }
 };

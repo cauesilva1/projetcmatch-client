@@ -3,13 +3,16 @@
 import { Button } from "@/components/ui/button";
 import { loginWithGithub } from "@/app/auth/authlogin";
 import axios from "axios";
+import { useRouter } from "next/navigation";  // Importando useRouter para redirecionar
 
 interface LoginButtonProps {
-  className?: string; // Permite passar classes personalizadas
-  children?: React.ReactNode; // Permite passar conteúdo personalizado
+  className?: string; 
+  children?: React.ReactNode;
 }
 
 export default function LoginButton({ className, children }: LoginButtonProps) {
+  const router = useRouter(); // useRouter funcionando porque estamos no lado do cliente
+
   const handleLogin = async () => {
     try {
       const { user, token } = await loginWithGithub();
@@ -19,23 +22,31 @@ export default function LoginButton({ className, children }: LoginButtonProps) {
         displayName: user.displayName,
         email: user.email,
         photoURL: user.photoURL,
-        createdAt: (user.metadata as any).createdAt || null, // Acessa createdAt como opcional
-        creationTime: user.metadata.creationTime, // Data de criação da conta
-        lastLoginAt: (user.metadata as any).lastLoginAt || null, // Acessa lastLoginAt como opcional
-        lastSignInTime: user.metadata.lastSignInTime, // Último login
-        token: token, // Opcional, caso você queira enviar o token também
+        createdAt: (user.metadata as any).createdAt || null,
+        creationTime: user.metadata.creationTime,
+        lastLoginAt: (user.metadata as any).lastLoginAt || null,
+        lastSignInTime: user.metadata.lastSignInTime,
+        token: token,
       };
 
       try {
-        // Enviar para o backend
         const response = await axios.post('http://localhost:5000/auth/github', userData);
         console.log('User sent to backend:', response.data);
       } catch (error) {
         console.error('Error sending user to backend:', error);
       }
     
-
       console.log("Usuário logado:", userData);
+
+      // Armazenando o token no cookie
+      if (token) {
+        document.cookie = `access_token=${token}; path=/; secure; samesite=strict`;
+        localStorage.setItem("user", JSON.stringify(userData));
+      }
+
+      // Redirecionar para a página inicial após o login
+      router.push("/InicialPage");
+      
     } catch (error) {
       console.error("Erro ao fazer login:", error);
     }
