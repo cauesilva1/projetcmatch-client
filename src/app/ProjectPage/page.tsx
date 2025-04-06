@@ -1,4 +1,5 @@
 import Avatar from "@/components/Avatar";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -8,13 +9,17 @@ export default function ProjectPage() {
     <div className="flex flex-col items-center bg-[#F3F4F6] min-h-screen p-4">
       {/* Header */}
       <header className="flex justify-between w-full items-center px-4 py-4 sm:px-0 sm:py-0">
+        <Link href="/InicialPage">
         <h1 className="font-inria text-4xl">OpenMatch</h1>
+        </Link>
+        {/* Avatar */}
+        <Link href="/Profile">
         <Avatar
-          src=""
           alt="Avatar do usuário"
           fallback="OU"
-          className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border border-red-500"
+          className="w-16 h-16 sm:w-20 sm:h-20 rounded-full"
         />
+        </Link>
       </header>
 
       <main className="mt-3 gap-[32px] items-center w-full">
@@ -72,7 +77,6 @@ export default function ProjectPage() {
               <TableRow>
                 <TableCell className="flex items-center justify-between text-center text-[#6B7280]">
                   <Avatar
-                    src=""
                     alt="Avatar do usuário"
                     fallback="OU"
                     className="w-10 h-10 rounded-full border border-red-500"
