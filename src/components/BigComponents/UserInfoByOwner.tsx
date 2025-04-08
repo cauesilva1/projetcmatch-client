@@ -28,12 +28,13 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
+import Link from "next/link";
 
-interface UserInfoProps {
+interface UserInfobyOwnerProps {
   className?: string; // Classes adicionais para estilização
 }
 
-const UserInfo: React.FC<UserInfoProps> = ({ className }) => {
+const UserInfoByOwner: React.FC<UserInfobyOwnerProps> = ({ className }) => {
   const [userName, setUserName] = useState<string | null>(null);
   const [userBio, setUserBio] = useState<string | null>(null);
   const [userPhoto, setUserPhoto] = useState<string | null>(null);
@@ -47,6 +48,8 @@ const UserInfo: React.FC<UserInfoProps> = ({ className }) => {
   const [userProjects, setUserProjects] = useState<any[]>([]); // Estado para armazenar os projetos do usuário
 
   const [participationRequests, setParticipationRequests] = useState<any[]>([]); // Estado para armazenar as solicitações de participação
+
+  const [participatedProjects, setParticipatedProjects] = useState<any[]>([]); // Estado para armazenar os projetos contribuídos
 
   useEffect(() => {
     // Busca os dados do usuário no localStorage
@@ -121,8 +124,39 @@ const UserInfo: React.FC<UserInfoProps> = ({ className }) => {
       }
     };
 
+    const fetchParticipatedProjects = async () => {
+      try {
+        // Recupera o uid do localStorage
+        const userData = localStorage.getItem("user");
+        const uid = userData ? JSON.parse(userData).user.uid : null;
+
+        if (!uid) {
+          console.error("UID do usuário não encontrado.");
+          return;
+        }
+
+        // Faz a requisição GET para a rota /participatedProjects
+        const response = await axios.get(
+          "http://localhost:5000/participatedProjects",
+          {
+            params: { uid }, // Envia o UID como parâmetro
+          }
+        );
+
+        if (response.status === 200) {
+          console.log("Projetos contribuídos:", response.data);
+          setParticipatedProjects(response.data); // Atualiza o estado com os projetos retornados
+        } else {
+          console.error("Erro ao buscar projetos contribuídos:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar projetos contribuídos:", error);
+      }
+    };
+
     fetchParticipationRequests(); // Chama a função para buscar as solicitações de participação
     fetchUserProjects(); // Chama a função para buscar os projetos do usuário
+    fetchParticipatedProjects(); // Chama a função para buscar os projetos contribuídos
   }, []);
 
   const handleCreateProject = async (e: React.FormEvent) => {
@@ -425,11 +459,23 @@ const UserInfo: React.FC<UserInfoProps> = ({ className }) => {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
+                    {participatedProjects.length > 0 ? (
+                    participatedProjects.map((project) => (
+                        <TableRow key={project.id}>
+                        <TableCell className="text-gray-800 text-center">
+                            <Link href={`/ProjectPage/${project.id}`}>
+                            <a className="text-blue-500 hover:underline">{project.title}</a>
+                            </Link>
+                        </TableCell>
+                        </TableRow>
+                    ))
+                    ) : (
                     <TableRow>
-                    <TableCell className="text-gray-800 text-center">
-                        Projeto Games
-                    </TableCell>
+                        <TableCell className="text-gray-600 text-center">
+                        Nenhum projeto encontrado.
+                        </TableCell>
                     </TableRow>
+                    )}
                 </TableBody>
                 </Table>
             </CardContent>
@@ -439,4 +485,4 @@ const UserInfo: React.FC<UserInfoProps> = ({ className }) => {
   );
 };
 
-export default UserInfo;
+export default UserInfoByOwner;

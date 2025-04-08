@@ -1,5 +1,9 @@
+
+
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import UserInfoByOwner from "@/components/BigComponents/UserInfoByOwner";
+import UserInfo from "@/components/BigComponents/UserInfo";
+
 export default function Profile() {
 
   return (
@@ -14,7 +18,7 @@ export default function Profile() {
       {/* Conteúdo */}
       <main className="flex  items-center gap-6 w-full">
         {/* Avatar e Nome */}
-        <UserInfoByOwner className="w-full"/>
+        <UserInfo className="w-full"/>
 
       </main>
     </div>
