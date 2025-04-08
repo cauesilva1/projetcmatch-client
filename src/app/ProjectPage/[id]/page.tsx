@@ -27,7 +27,11 @@ export async function generateStaticParams() {
   }));
 }
 
-export default async function ProjectPage({ params }: { params: { id: string } }) {
+export default async function ProjectPage({
+  params,
+}: {
+  params: { id: string };
+}) {
   const { id } = params;
   console.log("ID do projeto:", id);
 
