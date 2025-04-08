@@ -18,25 +18,27 @@ interface Project {
   };
 }
 
+interface PageProps {
+  params: Promise< { id: string; }>;
+}
+
 export async function generateStaticParams() {
   const response = await axios.get(`${process.env.NEXT_PUBLIC_URL_API}/projects`);
   const projects: Project[] = response.data;
 
   return projects.map((project) => ({
-    id: project.id.toString(),
+    id: project.id.toString(), // Certifique-se de que o ID é uma string
   }));
 }
 
 export default async function ProjectPage({
   params,
-}: {
-  params: { id: string };
-}) {
-  const { id } = params;
-  console.log("ID do projeto:", id);
+}: PageProps ) {
+
+  const { id } = await params;
 
   try {
-    const response = await axios.get(`${process.env.NEXT_PUBLIC_URL_API}/project/${id}`);
+    const response = await axios.get(`${process.env.NEXT_PUBLIC_URL_API}/project/?id=${id}`);
     const project: Project = response.data;
 
     return (

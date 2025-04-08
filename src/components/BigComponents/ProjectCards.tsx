@@ -67,7 +67,7 @@ const ProjectCards: React.FC = () => {
           </div>
         ) : filteredProjects.length > 0 ? (
           filteredProjects.map((project) => (
-            <Link href={`/ProjectPage/${project.id}`} key={project.id}>
+            <Link href={`/ProjectPage/${project.id.toString()}`} key={project.id}>
               <Card className="flex flex-col justify-between w-[300px] h-[300px] cursor-pointer hover:shadow-lg transition-shadow">
                 <CardHeader className="flex flex-col gap-4">
                   <CardTitle>{project.title}</CardTitle>
