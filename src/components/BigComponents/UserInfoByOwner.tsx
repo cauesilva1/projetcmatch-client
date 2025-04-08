@@ -77,7 +77,7 @@ const UserInfoByOwner: React.FC<UserInfobyOwnerProps> = ({ className }) => {
 
         // Faz a requisição GET para a rota /projectsbyowner
         const response = await axios.get(
-          "http://localhost:5000/projectsbyowner",
+          `${process.env.NEXT_PUBLIC_URL_API}/projectsbyowner`,
           {
             params: { uid }, // Envia o UID como parâmetro
           }
@@ -107,7 +107,7 @@ const UserInfoByOwner: React.FC<UserInfobyOwnerProps> = ({ className }) => {
 
         // Faz a requisição GET para a rota /participationRequests
         const response = await axios.get(
-          "http://localhost:5000//project/:id/requests",
+          `${process.env.NEXT_PUBLIC_URL_API}/project/:id/requests`,
           {
             params: { uid }, // Envia o UID como parâmetro
           }
@@ -137,7 +137,7 @@ const UserInfoByOwner: React.FC<UserInfobyOwnerProps> = ({ className }) => {
 
         // Faz a requisição GET para a rota /participatedProjects
         const response = await axios.get(
-          "http://localhost:5000/participatedProjects",
+          `${process.env.NEXT_PUBLIC_URL_API}//user/:id/participations`,
           {
             params: { uid }, // Envia o UID como parâmetro
           }
@@ -182,7 +182,7 @@ const UserInfoByOwner: React.FC<UserInfobyOwnerProps> = ({ className }) => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/Addproject",
+        "http://${process.env.process.env.NEXT_PUBLIC_URL_API}/Addproject",
         projectData,
         {
           headers: {

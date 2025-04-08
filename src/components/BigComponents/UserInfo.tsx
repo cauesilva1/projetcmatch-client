@@ -51,7 +51,7 @@ const UserInfo: React.FC<UserInfoProps> = ({ className }) => {
     const fetchUserData = async () => {
       try {
         // Faz a requisição para buscar os dados do usuário pelo ID
-        const response = await axios.get(`http://localhost:5000/user/${id}`);
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_URL_API}/user/${id}`);
         const user = response.data;
 
         setUserName(user.name || "Usuário");

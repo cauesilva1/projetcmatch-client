@@ -26,7 +26,8 @@ const ProjectCards: React.FC = () => {
 
   const fetchProjects = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/projects");
+  
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_URL_API}/projects`);
       setProjects(response.data); // Atualiza o estado com os projetos retornados
       setLoading(false);
     } catch (error) {

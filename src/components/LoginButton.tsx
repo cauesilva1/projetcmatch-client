@@ -21,7 +21,7 @@ export default function LoginButton({ className, children }: LoginButtonProps) {
 
       // Envia apenas o token para o back-end
       try {
-        const response = await axios.post("http://localhost:5000/auth/github", { token });
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_URL_API}/auth/github`, { token });
 
         console.log("Token recebido do backend:", response.data);
 
