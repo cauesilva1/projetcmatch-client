@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { use, useEffect, useState } from "react";
 import Avatar from "@/components/Avatar";
 import {
   Card,
@@ -29,6 +29,14 @@ import {
 import { Button } from "@/components/ui/button";
 import axios from "axios";
 import Link from "next/link";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface UserInfobyOwnerProps {
   className?: string; // Classes adicionais para estilização
@@ -50,6 +58,10 @@ const UserInfoByOwner: React.FC<UserInfobyOwnerProps> = ({ className }) => {
   const [participationRequests, setParticipationRequests] = useState<any[]>([]); // Estado para armazenar as solicitações de participação
 
   const [participatedProjects, setParticipatedProjects] = useState<any[]>([]); // Estado para armazenar os projetos contribuídos
+
+  const [githubProjects, setGithubProjects] = useState<any[]>([]); // Estado para armazenar os projetos do GitHub
+  const [selectedGithubProject, setSelectedGithubProject] = useState<string>(""); // Estado para o projeto selecionado
+  const [isLoadingGithubProjects, setIsLoadingGithubProjects] = useState(false); // Estado de carregamento
 
   useEffect(() => {
     // Busca os dados do usuário no localStorage
@@ -154,6 +166,8 @@ const UserInfoByOwner: React.FC<UserInfobyOwnerProps> = ({ className }) => {
       }
     };
 
+
+
     fetchParticipationRequests(); // Chama a função para buscar as solicitações de participação
     fetchUserProjects(); // Chama a função para buscar os projetos do usuário
     fetchParticipatedProjects(); // Chama a função para buscar os projetos contribuídos
@@ -178,11 +192,13 @@ const UserInfoByOwner: React.FC<UserInfobyOwnerProps> = ({ className }) => {
       githubLink: projectGithubLink,
     };
 
+    
+
     console.log("Dados do projeto:", projectData);
 
     try {
       const response = await axios.post(
-        "http://${process.env.process.env.NEXT_PUBLIC_URL_API}/Addproject",
+        `${process.env.NEXT_PUBLIC_URL_API}/Addproject`,
         projectData,
         {
           headers: {
@@ -197,11 +213,41 @@ const UserInfoByOwner: React.FC<UserInfobyOwnerProps> = ({ className }) => {
         setProjectName("");
         setProjectDescription("");
         setProjectGithubLink("");
+        setSelectedGithubProject("")
       } else {
         console.error("Erro ao criar projeto:", response.statusText);
       }
     } catch (error) {
       console.error("Erro ao enviar projeto:", error);
+    }
+  };
+
+  const fetchGithubProjects = async () => {
+    try {
+      setIsLoadingGithubProjects(true); // Inicia o carregamento
+      const userData = localStorage.getItem("user");
+      const parsedData = userData ? JSON.parse(userData) : null;
+      const username = parsedData?.username; // Acessa o username diretamente no nível superior
+
+      console.log("Nome de usuário do GitHub:", username);
+
+      if (!username) {
+        console.error("Nome de usuário do GitHub não encontrado.");
+        setIsLoadingGithubProjects(false); // Finaliza o carregamento
+        return;
+      }
+
+      const response = await axios.get(`https://api.github.com/users/${username}/repos`);
+
+      if (response.status === 200) {
+        setGithubProjects(response.data); // Atualiza o estado com os repositórios do GitHub
+      } else {
+        console.error("Erro ao buscar projetos do GitHub:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Erro ao buscar projetos do GitHub:", error);
+    } finally {
+      setIsLoadingGithubProjects(false); // Finaliza o carregamento
     }
   };
 
@@ -286,16 +332,36 @@ const UserInfoByOwner: React.FC<UserInfobyOwnerProps> = ({ className }) => {
                         </div>
                         <div className="mb-4">
                         <label className="block text-gray-700 font-medium mb-2">
-                            Link do github
+                            projetos
                         </label>
-                        <input
-                            type="url"
-                            value={projectGithubLink}
-                            onChange={(e) => setProjectGithubLink(e.target.value)}
-                            className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="Adicione o link do projeto no github"
-                            required
-                        />
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button className="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500" onClick={fetchGithubProjects}>
+                              {selectedGithubProject || "Selecione um projeto do GitHub"}
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent>
+                            <DropdownMenuLabel>Projetos do GitHub</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            {isLoadingGithubProjects ? (
+                              <DropdownMenuItem disabled>Carregando...</DropdownMenuItem>
+                            ) : githubProjects.length > 0 ? (
+                              githubProjects.map((repo) => (
+                                <DropdownMenuItem
+                                  key={repo.id}
+                                  onClick={() => {
+                                    setSelectedGithubProject(repo.name);
+                                    setProjectGithubLink(repo.html_url); // Atualiza o link do GitHub
+                                  }}
+                                >
+                                  {repo.name}
+                                </DropdownMenuItem>
+                              ))
+                            ) : (
+                              <DropdownMenuItem disabled>Nenhum projeto encontrado</DropdownMenuItem>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                         </div>
                         <DialogFooter>
                         <Button
